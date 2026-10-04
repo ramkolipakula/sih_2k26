@@ -2,7 +2,7 @@ import os
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "R&D Proposal Evaluation API"
+    PROJECT_NAME: str = "Mining Intelligence Copilot API"
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/proposals_db")
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")

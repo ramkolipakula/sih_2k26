@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type Role = 'USER' | 'ADMIN';
+type Role = 'ADMIN' | 'MANAGEMENT' | 'GEOLOGIST' | 'MINING_ENGINEER' | 'REPORTING_OFFICER' | 'REVIEWER';
 
 interface AuthContextType {
   role: Role;
@@ -11,9 +11,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Read from localStorage to persist mock role
   const [role, setRoleState] = useState<Role>(() => {
-    return (localStorage.getItem('mock_role') as Role) || 'USER';
+    return (localStorage.getItem('mock_role') as Role) || 'GEOLOGIST';
   });
 
   const setRole = (newRole: Role) => {
