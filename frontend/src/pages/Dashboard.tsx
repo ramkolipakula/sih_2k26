@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchSummary, fetchDocuments, fetchInsights, generateReport } from '../api';
 import { useNavigate } from 'react-router-dom';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function Dashboard() {
   const [stats, setStats] = useState<any>(null);
@@ -170,14 +171,40 @@ export default function Dashboard() {
             <h3 style={{ fontSize: '1.1rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               📊 Insights at a Glance
             </h3>
-            <div style={{ height: '150px', display: 'flex', alignItems: 'flex-end', gap: '8px', paddingBottom: '20px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
-              {/* Fake chart bars */}
-              {insights?.chart.values.map((v: number, i: number) => (
-                <div key={i} style={{ flex: 1, backgroundColor: 'var(--accent-orange)', height: `${v}%`, borderRadius: '4px 4px 0 0', opacity: 0.8 }} title={insights.chart.labels[i]}></div>
-              ))}
+            <div style={{ height: '200px', marginBottom: '16px' }}>
+              {insights?.chart ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={insights.chart.labels.map((lbl: string, i: number) => ({
+                      name: lbl,
+                      value: insights.chart.values[i]
+                    }))}
+                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--accent-orange)" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="var(--accent-orange)" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                      itemStyle={{ color: 'var(--accent-orange)' }}
+                    />
+                    <Area type="monotone" dataKey="value" stroke="var(--accent-orange)" fillOpacity={1} fill="url(#colorValue)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'var(--text-muted)' }}>
+                  Loading chart...
+                </div>
+              )}
             </div>
-            <div style={{ textAlign: 'center', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-              {insights?.chart.title}
+            <div style={{ textAlign: 'center', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+              {insights?.chart?.title || 'Production Trend'}
             </div>
             
             <div className="ai-insight">

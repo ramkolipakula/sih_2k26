@@ -13,6 +13,7 @@ import GeologistDashboard from './pages/GeologistDashboard';
 import MiningDashboard from './pages/MiningDashboard';
 import ReportingDashboard from './pages/ReportingDashboard';
 import AnalystDashboard from './pages/AnalystDashboard';
+import Dashboard from './pages/Dashboard';
 
 import Search from './pages/Search';
 import Documents from './pages/Documents';
@@ -34,7 +35,7 @@ export default function App() {
             </ProtectedRoute>
           }>
             {/* Admin Routes */}
-            <Route path="admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><Dashboard /></ProtectedRoute>} />
             <Route path="admin/users" element={<ProtectedRoute allowedRoles={['ADMIN']}><div>Users Management (Demo)</div></ProtectedRoute>} />
             
             {/* Management Routes */}
