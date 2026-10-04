@@ -9,6 +9,13 @@ async function fetchAPI(endpoint: string, options = {}) {
   return res.json();
 }
 
+export async function login(payload: any) {
+  return fetchAPI('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+}
+
 export async function fetchSummary() {
   return fetchAPI('/dashboard/summary');
 }

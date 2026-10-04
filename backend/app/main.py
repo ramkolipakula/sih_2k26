@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from app.routers import documents, search, reports, dashboard, topics, data_sources, tasks
+from app.routers import documents, search, reports, dashboard, topics, data_sources, tasks, auth
 from app.core.logging import logger
 from app.core.database import Base, engine
 
@@ -21,6 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["dashboard"])
 app.include_router(documents.router, prefix="/api/v1/documents", tags=["documents"])
 app.include_router(search.router, prefix="/api/v1/search", tags=["search"])

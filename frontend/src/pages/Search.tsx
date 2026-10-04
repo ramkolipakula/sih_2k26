@@ -28,7 +28,10 @@ const DEMO_CHIPS = [
   'Compare production trends 2020 to 2024',
 ];
 
+import { useAuth } from '../AuthContext';
+
 export default function Search() {
+  const { user } = useAuth();
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<SearchResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -108,7 +111,12 @@ export default function Search() {
       <form onSubmit={handleSearch} className="hero-search" style={{ marginBottom: '16px' }}>
         <input
           type="text"
-          placeholder="Ask a question about CMPDI/CIL reports..."
+          placeholder={user?.role === 'GEOLOGIST' ? 'Search geological and exploration information...' :
+                       user?.role === 'MINING_ENGINEER' ? 'Search mining and production information...' :
+                       user?.role === 'REPORTING_OFFICER' ? 'Find evidence for report preparation...' :
+                       user?.role === 'MANAGEMENT' ? 'Ask questions about projects, production and reports...' :
+                       user?.role === 'DATA_ANALYST' ? 'Analyze documents, data quality and trends...' :
+                       'Ask a question about CMPDI/CIL reports...'}
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
