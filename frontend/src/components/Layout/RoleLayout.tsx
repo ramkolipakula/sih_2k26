@@ -10,40 +10,6 @@ const roleNavMap: Record<string, {name: string, path: string, icon?: string}[]> 
     { name: 'Reports', path: '/reports', icon: '📝' },
     { name: 'Data Sources', path: '/data-sources', icon: '🗄️' },
     { name: 'Tasks', path: '/tasks', icon: '✅' },
-  ],
-  MANAGEMENT: [
-    { name: 'Dashboard', path: '/management/dashboard', icon: '📊' },
-    { name: 'Reports', path: '/reports', icon: '📝' },
-    { name: 'Projects', path: '/management/projects', icon: '🏗️' },
-    { name: 'Documents', path: '/documents', icon: '📄' },
-    { name: 'Search AI', path: '/search', icon: '🔍' },
-  ],
-  GEOLOGIST: [
-    { name: 'Dashboard', path: '/geologist/dashboard', icon: '📊' },
-    { name: 'Geological Reports', path: '/reports', icon: '📝' },
-    { name: 'Exploration', path: '/geologist/exploration', icon: '🗺️' },
-    { name: 'Documents', path: '/documents', icon: '📄' },
-    { name: 'Search & Analyze', path: '/search', icon: '🔍' },
-  ],
-  MINING_ENGINEER: [
-    { name: 'Dashboard', path: '/mining/dashboard', icon: '📊' },
-    { name: 'Mining Reports', path: '/reports', icon: '📝' },
-    { name: 'Production', path: '/mining/production', icon: '⛏️' },
-    { name: 'Documents', path: '/documents', icon: '📄' },
-    { name: 'Search & Analyze', path: '/search', icon: '🔍' },
-  ],
-  REPORTING_OFFICER: [
-    { name: 'Dashboard', path: '/reporting/dashboard', icon: '📊' },
-    { name: 'Generate Report', path: '/reports', icon: '📝' },
-    { name: 'Review Queue', path: '/reporting/reviews', icon: '👁️' },
-    { name: 'Documents', path: '/documents', icon: '📄' },
-  ],
-  DATA_ANALYST: [
-    { name: 'Dashboard', path: '/analyst/dashboard', icon: '📊' },
-    { name: 'Data Sources', path: '/data-sources', icon: '🗄️' },
-    { name: 'Search & Analyze', path: '/search', icon: '🔍' },
-    { name: 'Documents', path: '/documents', icon: '📄' },
-  ]
 };
 
 export default function RoleLayout() {
@@ -55,11 +21,6 @@ export default function RoleLayout() {
      if(location.pathname === '/' && user) {
         switch(user.role) {
             case 'ADMIN': navigate('/admin/dashboard'); break;
-            case 'MANAGEMENT': navigate('/management/dashboard'); break;
-            case 'GEOLOGIST': navigate('/geologist/dashboard'); break;
-            case 'MINING_ENGINEER': navigate('/mining/dashboard'); break;
-            case 'REPORTING_OFFICER': navigate('/reporting/dashboard'); break;
-            case 'DATA_ANALYST': navigate('/analyst/dashboard'); break;
         }
      }
   }, [location, user, navigate]);
