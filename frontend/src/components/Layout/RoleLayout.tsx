@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 const roleNavMap: Record<string, {name: string, path: string, icon?: string}[]> = {
   ADMIN: [
     { name: 'Dashboard', path: '/admin/dashboard', icon: '📊' },
-    { name: 'Users', path: '/admin/users', icon: '👥' },
     { name: 'Documents', path: '/documents', icon: '📄' },
     { name: 'Reports', path: '/reports', icon: '📝' },
     { name: 'Data Sources', path: '/data-sources', icon: '🗄️' },

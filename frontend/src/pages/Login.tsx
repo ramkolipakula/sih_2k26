@@ -3,18 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { login } from '../api';
 
-const DEMO_ACCOUNTS = [
-  { role: 'Admin', email: 'admin@cmpdi-demo.in', pass: 'Admin@123', color: '#1a1f2b' },
-  { role: 'Management', email: 'management@cmpdi-demo.in', pass: 'Management@123', color: '#2c3e50' },
-  { role: 'Geologist', email: 'geologist@cmpdi-demo.in', pass: 'Geologist@123', color: '#8e44ad' },
-  { role: 'Mining Engineer', email: 'mining.engineer@cmpdi-demo.in', pass: 'Mining@123', color: '#d35400' },
-  { role: 'Reporting Officer', email: 'reporting@cmpdi-demo.in', pass: 'Reporting@123', color: '#27ae60' },
-  { role: 'Data Analyst', email: 'analyst@cmpdi-demo.in', pass: 'Analyst@123', color: '#2980b9' }
-];
-
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@cmpdi-demo.in');
+  const [password, setPassword] = useState('Admin@123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { loginUser } = useAuth();
@@ -53,11 +44,6 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const autofill = (email: string, pass: string) => {
-    setEmail(email);
-    setPassword(pass);
   };
 
   return (
@@ -122,42 +108,6 @@ export default function Login() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-
-          {/* Demo Section */}
-          <div style={{ marginTop: '40px', borderTop: '1px solid var(--border-color)', paddingTop: '24px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>
-              Demo Login
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              {DEMO_ACCOUNTS.map(acc => (
-                <button
-                  key={acc.role}
-                  type="button"
-                  onClick={() => autofill(acc.email, acc.pass)}
-                  style={{
-                    background: 'white',
-                    border: `1px solid ${acc.color}40`,
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    color: acc.color,
-                    fontWeight: 600,
-                    transition: 'all 0.2s',
-                    textAlign: 'left',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseOver={e => e.currentTarget.style.background = `${acc.color}10`}
-                  onMouseOut={e => e.currentTarget.style.background = 'white'}
-                >
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: acc.color }}></div>
-                  {acc.role}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>
