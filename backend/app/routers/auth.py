@@ -14,7 +14,7 @@ class LoginRequest(BaseModel):
 @router.post("/login")
 def login(req: LoginRequest, db: Session = Depends(get_db)):
     result = db.execute(
-        text("SELECT id, email, name, role, department, designation FROM public.profiles WHERE email = :email AND password = :password"),
+        text("SELECT id, email, name, role, department, designation FROM profiles WHERE email = :email AND password = :password"),
         {"email": req.email, "password": req.password}
     ).fetchone()
     

@@ -2,11 +2,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from .config import settings
 
+# Determine if we're using SQLite based on connection string
+is_sqlite = settings.DATABASE_URL.startswith("sqlite")
+connect_args = {"check_same_thread": False} if is_sqlite else {}
+pool_kwargs = {} if is_sqlite else {"pool_pre_ping": True, "pool_size": 10, "max_overflow": 20}
+
 engine = create_engine(
-    settings.DATABASE_URL, 
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20
+    settings.DATABASE_URL,
+    connect_args=connect_args,
+    **pool_kwargs
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
