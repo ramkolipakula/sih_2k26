@@ -1,35 +1,50 @@
-
 const API_BASE = 'http://localhost:8000/api/v1';
 
-export async function fetchSummary() {
-  const res = await fetch(`${API_BASE}/dashboard/summary`);
+async function fetchAPI(endpoint: string, options = {}) {
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options
+  });
+  if (!res.ok) throw new Error(`API Error: ${res.status}`);
   return res.json();
+}
+
+export async function fetchSummary() {
+  return fetchAPI('/dashboard/summary');
 }
 
 export async function fetchInsights() {
-  const res = await fetch(`${API_BASE}/dashboard/insights`);
-  return res.json();
+  return fetchAPI('/dashboard/insights');
 }
 
 export async function fetchDocuments() {
-  const res = await fetch(`${API_BASE}/documents`);
-  return res.json();
+  return fetchAPI('/documents');
 }
 
-export async function generateReport(data: any) {
-  const res = await fetch(`${API_BASE}/reports/generate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  return res.json();
+export async function fetchDataSources() {
+  return fetchAPI('/data-sources');
 }
 
-export async function searchQdrant(query: string) {
-  const res = await fetch(`${API_BASE}/search`, {
+export async function fetchTasks() {
+  return fetchAPI('/tasks');
+}
+
+export async function generateReport(payload: any) {
+  return fetchAPI('/reports/generate', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query })
+    body: JSON.stringify(payload)
   });
-  return res.json();
+}
+
+export async function fetchReports() {
+  return fetchAPI('/reports');
+}
+
+export async function searchQdrant(query: string, type: string = "", year: string = "") {
+  const params = new URLSearchParams();
+  if (query) params.append('q', query);
+  if (type) params.append('type', type);
+  if (year) params.append('year', year);
+  
+  return fetchAPI(`/search?${params.toString()}`);
 }

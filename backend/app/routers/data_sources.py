@@ -1,14 +1,12 @@
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+from app.models.domain import DataSource
 
 router = APIRouter()
 
 @router.get("")
-def list_data_sources():
-    return {
-        "success": True,
-        "data": [
-            {"id": "1", "source_name": "CMPDI Geological Reports", "source_category": "Internal", "document_count": 1248, "status": "ACTIVE", "verified": True},
-            {"id": "2", "source_name": "CIL Subsidiary Reports", "source_category": "Subsidiary", "document_count": 2361, "status": "ACTIVE", "verified": True}
-        ]
-    }
+def list_data_sources(db: Session = Depends(get_db)):
+    sources = db.query(DataSource).order_by(DataSource.name).all()
+    return {"success": True, "data": sources}

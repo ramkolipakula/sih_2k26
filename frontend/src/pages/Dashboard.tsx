@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from 'react';
-import { fetchSummary, fetchDocuments, fetchInsights, generateReport, searchQdrant } from '../api';
+import { fetchSummary, fetchDocuments, fetchInsights, generateReport } from '../api';
 import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
@@ -8,6 +7,10 @@ export default function Dashboard() {
   const [docs, setDocs] = useState<any[]>([]);
   const [insights, setInsights] = useState<any>(null);
   const [query, setQuery] = useState("");
+  const [reportType, setReportType] = useState('Mining Production Report');
+  const [reportProject, setReportProject] = useState('Jharia Coalfield');
+  const [reportPeriod, setReportPeriod] = useState('2020 - 2024');
+  const [generating, setGenerating] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,9 +30,12 @@ export default function Dashboard() {
     setQuery(text);
   };
 
-  const handleGenerate = (e: React.FormEvent) => {
+  const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Report Generation Triggered! See Reports tab.");
+    setGenerating(true);
+    await generateReport({ reportType, project: reportProject, period: reportPeriod });
+    setGenerating(false);
+    navigate('/reports');
   };
 
   return (
@@ -111,7 +117,7 @@ export default function Dashboard() {
                     </div>
                   </td>
                   <td style={{ textAlign: 'right', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    12 Mar 2024
+                    {doc.uploaded_at ? new Date(doc.uploaded_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                   </td>
                 </tr>
               ))}
@@ -127,28 +133,36 @@ export default function Dashboard() {
             <form onSubmit={handleGenerate}>
               <div className="form-group">
                 <label className="form-label">Report Type</label>
-                <select className="form-select">
+                <select className="form-select" value={reportType} onChange={e => setReportType(e.target.value)}>
                   <option>Mining Production Report</option>
                   <option>Geological Report</option>
                   <option>Exploration Summary</option>
+                  <option>Environmental Report</option>
+                  <option>Project Status Report</option>
                 </select>
               </div>
               <div className="form-group">
                 <label className="form-label">Select Mine/Project</label>
-                <select className="form-select">
+                <select className="form-select" value={reportProject} onChange={e => setReportProject(e.target.value)}>
                   <option>Jharia Coalfield</option>
                   <option>Bokaro Block</option>
                   <option>Odisha Block</option>
+                  <option>Raniganj Coalfield</option>
+                  <option>Singrauli Open Cast</option>
                 </select>
               </div>
               <div className="form-group">
                 <label className="form-label">Select Period</label>
-                <select className="form-select">
+                <select className="form-select" value={reportPeriod} onChange={e => setReportPeriod(e.target.value)}>
                   <option>2020 - 2024</option>
                   <option>2023 - 2024</option>
+                  <option>Q1 2024</option>
+                  <option>FY 2023-24</option>
                 </select>
               </div>
-              <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '8px' }}>+ Generate Report</button>
+              <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '8px' }} disabled={generating}>
+                {generating ? 'Generating...' : '+ Generate Report'}
+              </button>
             </form>
           </div>
 
