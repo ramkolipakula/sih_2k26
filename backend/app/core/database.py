@@ -10,12 +10,16 @@ pool_kwargs = {} if is_sqlite else {"pool_pre_ping": True, "pool_size": 10, "max
 # SQLAlchemy 2.0 expects postgresql+psycopg:// for psycopg3
 import re
 
+from urllib.parse import urlparse, urlunparse
+
 # Clean the URL (remove quotes and whitespace)
 db_url = settings.DATABASE_URL.strip().strip("'").strip('"')
 
-# Use regex to replace postgres:// or postgresql:// (without a driver) with postgresql+psycopg://
-# The regex ^postgres(?:ql)?:// matches both postgres:// and postgresql:// at the start of the string
-db_url = re.sub(r"^postgres(?:ql)?://", "postgresql+psycopg://", db_url)
+# Robustly ensure the scheme uses psycopg
+parsed = urlparse(db_url)
+if parsed.scheme.startswith("postgres") or "postgresql" in parsed.scheme:
+    parsed = parsed._replace(scheme="postgresql+psycopg")
+    db_url = urlunparse(parsed)
 
 engine = create_engine(
     db_url,
