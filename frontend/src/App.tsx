@@ -6,9 +6,14 @@ import Dashboard from './pages/Dashboard';
 import Search from './pages/Search';
 import Documents from './pages/Documents';
 import Reports from './pages/Reports';
-import DataSources from './pages/DataSources';
-import Tasks from './pages/Tasks';
-import Profile from './pages/Profile';
+import Projects from './pages/Projects';
+import AICopilot from './pages/AICopilot';
+import Validation from './pages/Validation';
+import HistoricalKnowledge from './pages/HistoricalKnowledge';
+import GeologicalIntelligence from './pages/GeologicalIntelligence';
+import MiningAnalytics from './pages/MiningAnalytics';
+import AuditTrail from './pages/AuditTrail';
+import Settings from './pages/Settings';
 
 export default function App() {
   return (
@@ -16,19 +21,24 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<RoleLayout />}>
-            {/* Admin Routes */}
-            <Route path="admin/dashboard" element={<Dashboard />} />
-
-            {/* Shared Routes */}
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="projects" element={<Projects />} />
             <Route path="documents" element={<Documents />} />
+            <Route path="geological-intelligence" element={<GeologicalIntelligence />} />
+            <Route path="mining-analytics" element={<MiningAnalytics />} />
+            <Route path="historical-knowledge" element={<HistoricalKnowledge />} />
+            <Route path="ai-copilot" element={<AICopilot />} />
+            <Route path="validation" element={<Validation />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="audit-trail" element={<AuditTrail />} />
+            <Route path="settings" element={<Settings />} />
             <Route path="search" element={<Search />} />
-            <Route path="data-sources" element={<DataSources />} />
-            <Route path="tasks" element={<Tasks />} />
-            <Route path="profile" element={<Profile />} />
+            
+            {/* Legacy redirect */}
+            <Route path="admin/dashboard" element={<Navigate to="/dashboard" replace />} />
           </Route>
           
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

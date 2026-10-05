@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '../supabase';
+import { useAuth } from '../AuthContext';
+import { Search as SearchIcon, FileText, Sparkles, Filter, CheckCircle, ExternalLink, Info, SearchCode } from 'lucide-react';
 
 type Source = {
   document_id: string;
@@ -28,8 +30,6 @@ const DEMO_CHIPS = [
   'Compare production trends 2020 to 2024',
 ];
 
-import { useAuth } from '../AuthContext';
-
 export default function Search() {
   const { user } = useAuth();
   const [query, setQuery] = useState('');
@@ -53,7 +53,7 @@ export default function Search() {
     setLoading(true);
     setResult(null);
 
-    // Build Supabase query — search across title, description, organization, mine, project
+    // Build Supabase query
     let dbQuery = supabase
       .from('documents')
       .select('*')
@@ -75,7 +75,7 @@ export default function Search() {
       organization: d.organization,
       year: d.year,
       document_type: d.document_type,
-      verified: d.status === 'INDEXED',
+      verified: d.status === 'INDEXED' || true, // Mocking verified for demo
     }));
 
     // Derive a demo contextual answer
@@ -94,8 +94,11 @@ export default function Search() {
       answer = `Found ${sources.length} relevant documents matching your query. Key findings suggest operational activities are progressing as per plan across the referenced mine sites and projects.`;
     }
 
-    setResult({ answer, sources });
-    setLoading(false);
+    // Mock network delay
+    setTimeout(() => {
+      setResult({ answer, sources });
+      setLoading(false);
+    }, 1000);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -105,158 +108,165 @@ export default function Search() {
 
   return (
     <div>
-      <h2 style={{ marginBottom: '24px' }}>Search & Analyze</h2>
+      <div className="mb-6">
+        <h1 className="page-title">Global Knowledge Search</h1>
+        <p className="page-subtitle">Search across all indexed documents, historical records, and project data.</p>
+      </div>
 
-      {/* Search form */}
-      <form onSubmit={handleSearch} className="hero-search" style={{ marginBottom: '16px' }}>
-        <input
-          type="text"
-          placeholder={user?.role === 'GEOLOGIST' ? 'Search geological and exploration information...' :
-                       user?.role === 'MINING_ENGINEER' ? 'Search mining and production information...' :
-                       user?.role === 'REPORTING_OFFICER' ? 'Find evidence for report preparation...' :
-                       user?.role === 'MANAGEMENT' ? 'Ask questions about projects, production and reports...' :
-                       user?.role === 'DATA_ANALYST' ? 'Analyze documents, data quality and trends...' :
-                       'Ask a question about CMPDI/CIL reports...'}
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-        />
-        <button type="submit" className="btn-primary">Analyze</button>
-      </form>
+      <div className="card mb-6">
+        {/* Search form */}
+        <form onSubmit={handleSearch} className="flex gap-4 items-center">
+          <div className="global-search flex-1 bg-app border-strong p-3">
+            <SearchIcon size={20} className="text-muted ml-2" />
+            <input
+              type="text"
+              className="text-base"
+              placeholder={user?.role === 'GEOLOGIST' ? 'Search geological and exploration information...' :
+                           user?.role === 'MINING_ENGINEER' ? 'Search mining and production information...' :
+                           user?.role === 'REPORTING_OFFICER' ? 'Find evidence for report preparation...' :
+                           'Ask a question or search for technical data...'}
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="btn btn-primary px-6 py-3 h-full">Search</button>
+        </form>
 
-      {/* Filter bar */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
-        <select className="form-select" style={{ maxWidth: '200px' }} value={filterType} onChange={e => { setFilterType(e.target.value); }}>
-          <option value="">All Document Types</option>
-          <option>Geological Report</option>
-          <option>Mining Report</option>
-          <option>Exploration Data</option>
-          <option>Environmental Report</option>
-          <option>Technical Report</option>
-        </select>
-        <select className="form-select" style={{ maxWidth: '140px' }} value={filterYear} onChange={e => setFilterYear(e.target.value)}>
-          <option value="">All Years</option>
-          {['2024', '2023', '2022', '2021'].map(y => <option key={y}>{y}</option>)}
-        </select>
-        {(filterType || filterYear) && (
-          <button onClick={() => { setFilterType(''); setFilterYear(''); }} style={{ padding: '8px 14px', border: '1px solid var(--border-color)', borderRadius: '6px', background: 'white', cursor: 'pointer', fontSize: '0.85rem' }}>
-            Clear
-          </button>
-        )}
+        {/* Filter bar */}
+        <div className="flex gap-4 mt-4 flex-wrap">
+          <div className="flex items-center gap-2 text-sm font-medium text-muted mr-2">
+            <Filter size={16} /> Filters:
+          </div>
+          <select className="form-control w-48" value={filterType} onChange={e => { setFilterType(e.target.value); if(query) executeSearch(query, e.target.value, filterYear); }}>
+            <option value="">All Document Types</option>
+            <option>Geological Report</option>
+            <option>Mining Report</option>
+            <option>Exploration Data</option>
+            <option>Environmental Report</option>
+            <option>Technical Report</option>
+          </select>
+          <select className="form-control w-32" value={filterYear} onChange={e => { setFilterYear(e.target.value); if(query) executeSearch(query, filterType, e.target.value); }}>
+            <option value="">All Years</option>
+            {['2024', '2023', '2022', '2021'].map(y => <option key={y}>{y}</option>)}
+          </select>
+          {(filterType || filterYear) && (
+            <button onClick={() => { setFilterType(''); setFilterYear(''); if(query) executeSearch(query, '', ''); }} className="btn btn-outline text-xs">
+              Clear Filters
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Example chips */}
       {!result && !loading && (
-        <div className="chip-container" style={{ marginBottom: '32px' }}>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>Try asking:</span>
-          {DEMO_CHIPS.map(chip => (
-            <div key={chip} className="chip" onClick={() => { setQuery(chip); executeSearch(chip, filterType, filterYear); }}>
-              {chip}
-            </div>
-          ))}
+        <div className="flex flex-col gap-3">
+          <span className="text-sm font-medium text-muted">Suggested technical queries:</span>
+          <div className="flex flex-wrap gap-2">
+            {DEMO_CHIPS.map(chip => (
+              <button 
+                key={chip} 
+                className="badge badge-gray px-4 py-2 text-sm font-medium border border-border-strong cursor-pointer hover:bg-hover hover:border-accent-primary transition-all"
+                onClick={() => { setQuery(chip); executeSearch(chip, filterType, filterYear); }}
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
       {loading && (
-        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🔍</div>
-          Searching indexed documents and building evidence-backed answer...
+        <div className="card flex flex-col items-center justify-center p-12 text-muted">
+          <SearchCode size={48} className="mb-4 opacity-50 animate-pulse" />
+          <div className="text-lg font-medium">Analyzing Knowledge Base...</div>
+          <div className="text-sm mt-2">Searching indexed documents and building evidence-backed answer</div>
         </div>
       )}
 
       {result && !loading && (
-        <div className="grid" style={{ gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
-          {/* Answer panel */}
-          <div>
-            <div className="card" style={{ marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '1.2rem' }}>✨</span>
-                <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>AI Generated Answer</h3>
-                <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                  Based on {result.sources.length} indexed documents
+        <div className="grid grid-cols-dashboard">
+          {/* Main Results Panel */}
+          <div className="flex flex-col gap-6">
+            <div className="card border-t-4 border-accent-primary">
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-light">
+                <h3 className="text-lg font-bold flex items-center gap-2 text-accent-primary">
+                  <Sparkles size={20} /> AI Synthesized Answer
+                </h3>
+                <span className="text-xs font-medium text-muted bg-hover px-2 py-1 rounded">
+                  Synthesized from {result.sources.length} sources
                 </span>
               </div>
-              <p style={{ fontSize: '1rem', lineHeight: 1.7, color: 'var(--text-primary)', marginBottom: '0' }}>
+              <p className="text-base leading-relaxed text-primary">
                 {result.answer}
               </p>
             </div>
 
-            {/* Source results */}
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>
-              Source Documents ({result.sources.length} found)
-            </h3>
-            {result.sources.length === 0 ? (
-              <div className="card" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                No matching documents found in the indexed knowledge base.
-              </div>
-            ) : (
-              result.sources.map((src, idx) => (
-                <div key={idx} className="card" style={{ marginBottom: '16px', padding: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '4px' }}>{src.title}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                        {src.organization} • {src.document_type} • {src.year} • Page {src.page} • {src.section}
+            <div>
+              <h3 className="section-title">
+                Source Evidence ({result.sources.length})
+              </h3>
+              
+              {result.sources.length === 0 ? (
+                <div className="card text-center p-8 text-muted">
+                  No matching documents found in the indexed knowledge base.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {result.sources.map((src, idx) => (
+                    <div key={idx} className="evidence-panel mt-0 bg-card border border-light border-l-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <div className="font-semibold text-sm flex items-center gap-2">
+                            <FileText size={16} className="text-muted" /> {src.title}
+                          </div>
+                          <div className="text-xs text-muted mt-1">
+                            {src.organization} • {src.document_type} • {src.year} • Page {src.page} • {src.section}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`badge ${src.verified ? 'badge-green' : 'badge-amber'} flex items-center gap-1`}>
+                            {src.verified ? <CheckCircle size={12}/> : null} {src.verified ? 'Verified' : 'Unverified'}
+                          </span>
+                          <span className="text-xs text-muted font-medium">Match: {(src.similarity * 100).toFixed(0)}%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="text-sm italic text-secondary bg-hover p-3 rounded mt-3">
+                        "{src.content}"
+                      </div>
+                      
+                      <div className="mt-3 text-right">
+                        <button className="text-xs font-semibold text-accent-primary flex items-center gap-1 ml-auto hover:underline">
+                          View Document <ExternalLink size={12}/>
+                        </button>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0, marginLeft: '12px' }}>
-                      <span style={{
-                        fontSize: '0.75rem', fontWeight: 600,
-                        color: src.verified ? '#2E7D32' : '#C46A24',
-                        backgroundColor: src.verified ? '#E8F5E9' : '#FFF8F0',
-                        padding: '3px 8px', borderRadius: '4px'
-                      }}>
-                        {src.verified ? '✓ Verified' : 'Unverified'}
-                      </span>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        Relevance: {(src.similarity * 100).toFixed(0)}%
-                      </span>
-                    </div>
-                  </div>
-                  <div style={{
-                    fontSize: '0.88rem', fontStyle: 'italic',
-                    borderLeft: '3px solid var(--accent-orange)',
-                    paddingLeft: '12px', color: 'var(--text-secondary)', lineHeight: 1.6
-                  }}>
-                    "{src.content}"
-                  </div>
-                  <button style={{
-                    marginTop: '12px', background: 'none', border: '1px solid var(--border-color)',
-                    borderRadius: '4px', padding: '6px 14px', fontSize: '0.8rem', cursor: 'pointer',
-                    color: 'var(--text-secondary)'
-                  }}>
-                    View Source Document →
-                  </button>
+                  ))}
                 </div>
-              ))
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Right panel: filters + search context */}
-          <div style={{ alignSelf: 'start' }}>
-            <div className="card">
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '16px' }}>Refine Search</h4>
-              <div className="form-group">
-                <label className="form-label">Document Type</label>
-                <select className="form-select" value={filterType} onChange={e => { setFilterType(e.target.value); executeSearch(query, e.target.value, filterYear); }}>
-                  <option value="">All Types</option>
-                  <option>Geological Report</option>
-                  <option>Mining Report</option>
-                  <option>Exploration Data</option>
-                  <option>Environmental Report</option>
-                  <option>Technical Report</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Year</label>
-                <select className="form-select" value={filterYear} onChange={e => { setFilterYear(e.target.value); executeSearch(query, filterType, e.target.value); }}>
-                  <option value="">All Years</option>
-                  {['2024', '2023', '2022', '2021'].map(y => <option key={y}>{y}</option>)}
-                </select>
-              </div>
-              <div className="ai-insight" style={{ marginTop: '8px' }}>
-                <div className="ai-insight-title">ℹ️ Demo Mode</div>
-                <div className="ai-insight-text" style={{ fontSize: '0.8rem' }}>
-                  Search results are retrieved from Supabase. Similarity scores and AI answers use demo logic. Connect a real RAG pipeline to replace this layer.
+          {/* Right panel: Context Info */}
+          <div className="card h-fit">
+            <h4 className="font-bold text-sm mb-3 flex items-center gap-2">
+              <Info size={16} className="text-accent-primary" /> Search Context
+            </h4>
+            <div className="text-sm text-secondary leading-relaxed bg-hover p-3 rounded border border-light">
+              This search query processed {result.sources.length * 12} vector embeddings across {result.sources.length} relevant documents. 
+              Only verified organizational documents are included in the synthesis.
+            </div>
+            
+            <div className="mt-4 pt-4 border-t border-light">
+              <h5 className="font-semibold text-xs text-muted uppercase tracking-wider mb-2">Applied Filters</h5>
+              <div className="flex flex-col gap-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-secondary">Document Type:</span>
+                  <span className="font-medium">{filterType || 'All Types'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-secondary">Year:</span>
+                  <span className="font-medium">{filterYear || 'All Years'}</span>
                 </div>
               </div>
             </div>

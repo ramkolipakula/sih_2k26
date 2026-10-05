@@ -1,4 +1,4 @@
-import { supabase } from '../supabase';
+import { ArrowLeft, CheckCircle, FileText, Sparkles, Building2, Calendar, MapPin, Hash } from 'lucide-react';
 
 type Doc = {
   id: string;
@@ -41,78 +41,75 @@ export default function DocumentDetail({ doc, onBack }: Props) {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+      <div className="flex items-center gap-4 mb-8">
         <button
           onClick={onBack}
-          style={{
-            background: 'none', border: '1px solid var(--border-color)',
-            borderRadius: '6px', padding: '8px 16px', cursor: 'pointer', fontSize: '0.9rem',
-            display: 'flex', alignItems: 'center', gap: '8px'
-          }}
+          className="btn btn-outline border-border-light"
         >
-          ← Back to Documents
+          <ArrowLeft size={16} /> Back
         </button>
+        <div className="flex-1">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <FileText size={24} className="text-muted" /> {doc.title}
+          </h2>
+          <div className="text-sm text-muted mt-1 flex gap-4">
+            <span className="flex items-center gap-1"><Building2 size={14}/> {doc.organization}</span>
+            <span className="flex items-center gap-1"><MapPin size={14}/> {doc.mine || doc.project || 'CMPDI'}</span>
+            <span className="flex items-center gap-1"><Calendar size={14}/> {doc.year}</span>
+          </div>
+        </div>
         <div>
-          <h2 style={{ fontSize: '1.3rem', marginBottom: '4px' }}>{doc.title}</h2>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            {doc.organization} • {doc.document_type} • {doc.year}
+          <span className={`badge ${doc.status === 'INDEXED' ? 'badge-green' : 'badge-amber'} flex items-center gap-1 px-3 py-1.5`}>
+            {doc.status === 'INDEXED' ? <CheckCircle size={14}/> : null}
+            {doc.status === 'INDEXED' ? 'Verified & Indexed' : doc.status}
           </span>
         </div>
-        <span style={{
-          marginLeft: 'auto',
-          fontSize: '0.8rem', fontWeight: 600,
-          color: doc.status === 'INDEXED' ? '#2E7D32' : 'var(--accent-orange)',
-          backgroundColor: doc.status === 'INDEXED' ? '#E8F5E9' : '#FFF8F0',
-          padding: '6px 14px', borderRadius: '20px',
-        }}>
-          {doc.status === 'INDEXED' ? '✓ Verified & Indexed' : doc.status}
-        </span>
       </div>
 
       {/* Metadata + AI Summary grid */}
-      <div className="grid" style={{ gridTemplateColumns: '1fr 2fr', gap: '24px', marginBottom: '24px' }}>
-        {/* Metadata card */}
-        <div className="card">
-          <h3 style={{ fontSize: '1rem', marginBottom: '20px', fontWeight: 700 }}>Document Metadata</h3>
-          {[
-            { label: 'Document Type', value: doc.document_type },
-            { label: 'Organization', value: doc.organization },
-            { label: 'Mine / Project', value: doc.mine || doc.project || '—' },
-            { label: 'Year', value: doc.year },
-            { label: 'File Type', value: doc.file_type || 'PDF' },
-            { label: 'Pages', value: doc.page_count },
-            { label: 'Uploaded', value: uploadedDate },
-            { label: 'Status', value: doc.status },
-          ].map(row => (
-            <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
-              <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>{row.label}</span>
-              <span style={{ fontWeight: 600, textAlign: 'right', maxWidth: '55%' }}>{row.value || '—'}</span>
-            </div>
-          ))}
-        </div>
-
+      <div className="grid grid-cols-dashboard gap-6 mb-6">
+        
         {/* AI Summary card */}
-        <div className="card">
-          <h3 style={{ fontSize: '1rem', marginBottom: '16px', fontWeight: 700 }}>AI Generated Summary</h3>
-          <p style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: '20px' }}>
+        <div className="card border-t-4 border-accent-primary">
+          <h3 className="section-title flex items-center gap-2"><Sparkles size={18} className="text-accent-primary" /> AI Generated Summary</h3>
+          <p className="text-sm leading-relaxed text-secondary mb-6 p-4 bg-app rounded-md border border-light">
             {aiSummary.executive_summary}
           </p>
 
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '12px' }}>Key Findings</h4>
-          <ul style={{ paddingLeft: '20px', marginBottom: '20px' }}>
+          <h4 className="font-semibold text-sm mb-3">Key Extracted Findings</h4>
+          <ul className="list-disc pl-5 mb-6 text-sm text-secondary space-y-2">
             {aiSummary.key_findings.map((f, i) => (
-              <li key={i} style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', lineHeight: 1.6 }}>{f}</li>
+              <li key={i}>{f}</li>
             ))}
           </ul>
 
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '12px' }}>Major Topics</h4>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <h4 className="font-semibold text-sm mb-3">Major Topics</h4>
+          <div className="flex flex-wrap gap-2">
             {aiSummary.major_topics.map(t => (
-              <span key={t} style={{
-                backgroundColor: '#FFF8F0', color: 'var(--accent-orange)',
-                border: '1px solid #F0D0A8', borderRadius: '16px',
-                padding: '4px 14px', fontSize: '0.82rem', fontWeight: 600
-              }}>{t}</span>
+              <span key={t} className="badge badge-gray border border-border-strong">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Metadata card */}
+        <div className="card h-fit">
+          <h3 className="section-title">Document Metadata</h3>
+          <div className="flex flex-col">
+            {[
+              { label: 'Document Type', value: doc.document_type },
+              { label: 'Organization', value: doc.organization },
+              { label: 'Project Area', value: doc.mine || doc.project || '—' },
+              { label: 'Year', value: doc.year },
+              { label: 'File Type', value: doc.file_type || 'PDF' },
+              { label: 'Page Count', value: doc.page_count },
+              { label: 'Uploaded On', value: uploadedDate },
+            ].map((row, idx) => (
+              <div key={row.label} className={`flex justify-between py-3 text-sm ${idx !== 6 ? 'border-b border-light' : ''}`}>
+                <span className="text-muted font-medium">{row.label}</span>
+                <span className="font-semibold text-right max-w-[60%]">{row.value || '—'}</span>
+              </div>
             ))}
           </div>
         </div>
@@ -120,23 +117,24 @@ export default function DocumentDetail({ doc, onBack }: Props) {
 
       {/* Source Evidence */}
       <div className="card">
-        <h3 style={{ fontSize: '1rem', marginBottom: '16px', fontWeight: 700 }}>Source Evidence</h3>
-        <div style={{
-          background: '#F9FAFB', border: '1px solid var(--border-color)',
-          borderRadius: '6px', padding: '16px', marginBottom: '12px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{doc.title}</span>
-            <span style={{ fontSize: '0.8rem', color: '#2E7D32', fontWeight: 600 }}>✓ Verified</span>
+        <h3 className="section-title">Source Evidence & Traceability</h3>
+        
+        <div className="evidence-panel mt-4">
+          <div className="evidence-header flex justify-between">
+            <span className="flex items-center gap-2"><FileText size={16}/> {doc.title}</span>
+            <span className="badge badge-green">Verified</span>
           </div>
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
-            Page 1–{doc.page_count} • {doc.organization} • {doc.year}
+          <div className="evidence-meta mt-2 mb-3">
+            <span>Pages 1–{doc.page_count}</span>
+            <span>•</span>
+            <span>{doc.organization}</span>
           </div>
-          <p style={{ fontSize: '0.88rem', fontStyle: 'italic', borderLeft: '3px solid var(--accent-orange)', paddingLeft: '12px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          <div className="evidence-body italic border-l-2 border-accent-primary pl-3 ml-1 bg-card p-2 rounded">
             "{doc.description || `This ${doc.document_type.toLowerCase()} contains detailed findings relevant to ${doc.mine || doc.project} operations.`}"
-          </p>
+          </div>
         </div>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+        
+        <p className="text-xs text-muted mt-4">
           * AI summaries are generated from document metadata. Full text extraction requires document indexing to be complete.
         </p>
       </div>
