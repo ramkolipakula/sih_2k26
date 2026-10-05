@@ -1,5 +1,4 @@
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
-import { useAuth } from '../../AuthContext';
 import { LogOut } from 'lucide-react';
 import { useEffect } from 'react';
 
@@ -10,24 +9,23 @@ const roleNavMap: Record<string, {name: string, path: string, icon?: string}[]> 
     { name: 'Reports', path: '/reports', icon: '📝' },
     { name: 'Data Sources', path: '/data-sources', icon: '🗄️' },
     { name: 'Tasks', path: '/tasks', icon: '✅' },
+  ],
 };
 
 export default function RoleLayout() {
-  const { user, logoutUser } = useAuth();
+  const user = { name: 'Admin', role: 'ADMIN', designation: 'System Administrator' };
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-     if(location.pathname === '/' && user) {
-        switch(user.role) {
-            case 'ADMIN': navigate('/admin/dashboard'); break;
-        }
+     if(location.pathname === '/') {
+        navigate('/admin/dashboard');
      }
-  }, [location, user, navigate]);
+  }, [location, navigate]);
 
   const handleLogout = () => {
-    logoutUser();
-    navigate('/login');
+    // Auth is disabled
+    console.log("Auth is disabled.");
   };
 
   const navItems = user ? (roleNavMap[user.role] || []) : [];

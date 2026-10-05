@@ -1,36 +1,25 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
-import { ProtectedRoute } from './ProtectedRoute';
 import RoleLayout from './components/Layout/RoleLayout';
 
-import Login from './pages/Login';
-import Unauthorized from './pages/Unauthorized';
-import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
-
 import Search from './pages/Search';
 import Documents from './pages/Documents';
 import Reports from './pages/Reports';
 import DataSources from './pages/DataSources';
 import Tasks from './pages/Tasks';
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
-          
-          <Route path="/" element={
-            <ProtectedRoute>
-              <RoleLayout />
-            </ProtectedRoute>
-          }>
+          <Route path="/" element={<RoleLayout />}>
             {/* Admin Routes */}
-            <Route path="admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><Dashboard /></ProtectedRoute>} />
+            <Route path="admin/dashboard" element={<Dashboard />} />
 
-            {/* Shared Protected Routes */}
+            {/* Shared Routes */}
             <Route path="documents" element={<Documents />} />
             <Route path="reports" element={<Reports />} />
             <Route path="search" element={<Search />} />

@@ -19,13 +19,17 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({
+    id: 'admin-1',
+    email: 'admin@cmpdi.in',
+    name: 'Admin User',
+    role: 'ADMIN',
+    department: 'IT',
+    designation: 'System Administrator',
+  });
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    // Auth disabled, user is always admin
   }, []);
 
   const loginUser = (userData: User, token: string) => {
