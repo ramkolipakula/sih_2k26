@@ -7,12 +7,24 @@ from app.core.database import Base, engine
 
 from app.core.config import settings
 
-Base.metadata.create_all(bind=engine)
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: create database tables
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Successfully connected to the database and created tables.")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+    yield
+    # Shutdown logic can go here
 
 app = FastAPI(
     title="CMPDI | CIL - Mining Intelligence & Reporting Copilot",
     description="Search | Analyze | Generate | With Evidence",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(
