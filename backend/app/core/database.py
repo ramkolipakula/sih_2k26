@@ -8,11 +8,14 @@ connect_args = {"check_same_thread": False} if is_sqlite else {}
 pool_kwargs = {} if is_sqlite else {"pool_pre_ping": True, "pool_size": 10, "max_overflow": 20}
 
 # SQLAlchemy 2.0 expects postgresql+psycopg:// for psycopg3
-db_url = settings.DATABASE_URL
-if db_url.startswith("postgresql://"):
-    db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
-elif db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
+import re
+
+# Clean the URL (remove quotes and whitespace)
+db_url = settings.DATABASE_URL.strip().strip("'").strip('"')
+
+# Use regex to replace postgres:// or postgresql:// (without a driver) with postgresql+psycopg://
+# The regex ^postgres(?:ql)?:// matches both postgres:// and postgresql:// at the start of the string
+db_url = re.sub(r"^postgres(?:ql)?://", "postgresql+psycopg://", db_url)
 
 engine = create_engine(
     db_url,
