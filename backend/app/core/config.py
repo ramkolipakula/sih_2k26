@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Mining Intelligence Copilot API"
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://sih-2k26-two.vercel.app")
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/proposals_db")
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     QDRANT_URL: str = os.getenv("QDRANT_URL", "http://localhost:6333")

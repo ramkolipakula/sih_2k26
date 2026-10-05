@@ -5,6 +5,8 @@ from app.routers import documents, search, reports, dashboard, topics, data_sour
 from app.core.logging import logger
 from app.core.database import Base, engine
 
+from app.core.config import settings
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -18,7 +20,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173",
-        "https://sih-2k26-two.vercel.app"
+        settings.FRONTEND_URL
     ],
     allow_credentials=True,
     allow_methods=["*"],
