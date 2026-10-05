@@ -163,8 +163,8 @@ export default function Search() {
           <span className="text-sm font-medium text-muted">Suggested technical queries:</span>
           <div className="flex flex-wrap gap-2">
             {DEMO_CHIPS.map(chip => (
-              <button 
-                key={chip} 
+              <button
+                key={chip}
                 className="badge badge-gray px-4 py-2 text-sm font-medium border border-border-strong cursor-pointer hover:bg-hover hover:border-accent-primary transition-all"
                 onClick={() => { setQuery(chip); executeSearch(chip, filterType, filterYear); }}
               >
@@ -205,7 +205,7 @@ export default function Search() {
               <h3 className="section-title">
                 Source Evidence ({result.sources.length})
               </h3>
-              
+
               {result.sources.length === 0 ? (
                 <div className="card text-center p-8 text-muted">
                   No matching documents found in the indexed knowledge base.
@@ -230,11 +230,11 @@ export default function Search() {
                           <span className="text-xs text-muted font-medium">Match: {(src.similarity * 100).toFixed(0)}%</span>
                         </div>
                       </div>
-                      
+
                       <div className="text-sm italic text-secondary bg-hover p-3 rounded mt-3">
                         "{src.content}"
                       </div>
-                      
+
                       <div className="mt-3 text-right">
                         <button className="text-xs font-semibold text-accent-primary flex items-center gap-1 ml-auto hover:underline">
                           View Document <ExternalLink size={12}/>
@@ -253,10 +253,10 @@ export default function Search() {
               <Info size={16} className="text-accent-primary" /> Search Context
             </h4>
             <div className="text-sm text-secondary leading-relaxed bg-hover p-3 rounded border border-light">
-              This search query processed {result.sources.length * 12} vector embeddings across {result.sources.length} relevant documents. 
+              This search query processed {result.sources.length * 12} vector embeddings across {result.sources.length} relevant documents.
               Only verified organizational documents are included in the synthesis.
             </div>
-            
+
             <div className="mt-4 pt-4 border-t border-light">
               <h5 className="font-semibold text-xs text-muted uppercase tracking-wider mb-2">Applied Filters</h5>
               <div className="flex flex-col gap-2 text-sm">

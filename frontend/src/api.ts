@@ -52,6 +52,6 @@ export async function searchQdrant(query: string, type: string = "", year: strin
   if (query) params.append('q', query);
   if (type) params.append('type', type);
   if (year) params.append('year', year);
-  
+
   return fetchAPI(`/search?${params.toString()}`);
 }

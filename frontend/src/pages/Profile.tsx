@@ -9,9 +9,9 @@ export default function Profile() {
       <h2 style={{ marginBottom: '24px' }}>User Profile</h2>
       <div className="card" style={{ maxWidth: '600px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '30px' }}>
-          <div style={{ 
-            width: '80px', height: '80px', borderRadius: '50%', 
-            background: 'var(--accent-orange)', color: 'white', 
+          <div style={{
+            width: '80px', height: '80px', borderRadius: '50%',
+            background: 'var(--accent-orange)', color: 'white',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '2rem', fontWeight: 'bold'
           }}>
@@ -22,7 +22,7 @@ export default function Profile() {
             <div style={{ color: 'var(--text-secondary)' }}>{user.designation}</div>
           </div>
         </div>
-        
+
         <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Email</div>

@@ -3,7 +3,7 @@ import { useAuth } from '../AuthContext';
 
 export default function Unauthorized() {
   const { user } = useAuth();
-  
+
   const getDashboardRoute = () => {
     if (!user) return '/login';
     switch (user.role) {
